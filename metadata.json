@@ -1,0 +1,6 @@
+{
+  "name": "Asistencia Deportiva",
+  "description": "Dashboard para la visualización y control de asistencia deportiva mediante sincronización de archivos Excel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
