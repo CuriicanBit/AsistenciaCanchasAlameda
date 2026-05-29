@@ -20,7 +20,7 @@ export function UniversidadLogo({ className = "h-14 w-auto" }: UniversidadLogoPr
       </defs>
 
       {/* Lema en latín 'DUC IN ALTUM' arqueado exacto */}
-      <text font-family="Georgia, 'Times New Roman', serif" font-size="12" font-weight="bold" fill="#4B5563" letter-spacing="0.08em">
+      <text fontFamily="Georgia, 'Times New Roman', serif" fontSize="12" fontWeight="bold" fill="#4B5563" letterSpacing="0.08em">
         <textPath href="#textArcPath" startOffset="50%" textAnchor="middle">
           DUC IN ALTUM
         </textPath>
@@ -38,11 +38,11 @@ export function UniversidadLogo({ className = "h-14 w-auto" }: UniversidadLogoPr
       <text 
         x="100" 
         y="145" 
-        font-family="Georgia, 'Times New Roman', serif" 
-        font-size="46" 
+        fontFamily="Georgia, 'Times New Roman', serif" 
+        fontSize="46" 
         fill="#ffffff" 
         textAnchor="middle"
-        font-weight="normal"
+        fontWeight="normal"
       >
         UA
       </text>

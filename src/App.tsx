@@ -95,6 +95,48 @@ export default function App() {
     return dateStr;
   };
 
+  // Obtener fechas relativas de Ayer, Hoy y Mañana formateadas adecuadamente para el acceso rápido
+  const getRelativeDates = () => {
+    const today = new Date();
+    
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    const formatToYYYYMMDD = (d: Date) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const formatToDDMM = (d: Date) => {
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${day}/${month}`;
+    };
+
+    return [
+      {
+        label: 'Ayer',
+        dateValue: formatToYYYYMMDD(yesterday),
+        formatted: formatToDDMM(yesterday),
+      },
+      {
+        label: 'Hoy',
+        dateValue: formatToYYYYMMDD(today),
+        formatted: formatToDDMM(today),
+      },
+      {
+        label: 'Mañana',
+        dateValue: formatToYYYYMMDD(tomorrow),
+        formatted: formatToDDMM(tomorrow),
+      },
+    ];
+  };
+
   return (
     <div id="app" className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-emerald-500 selection:text-white antialiased">
       
@@ -232,37 +274,35 @@ export default function App() {
                   className="px-4 py-3 bg-slate-50 border border-gray-200 hover:border-gray-300 rounded-2xl text-slate-800 font-bold focus:outline-hidden focus:ring-2 focus:ring-emerald-500/15 focus:border-emerald-500 transition-all font-sans cursor-pointer text-base"
                 />
 
-                {/* ACCESO RÁPIDO A FECHAS CON RESERVAS */}
-                {availableDatesWithReservations.length > 0 && (
-                  <div className="mt-3.5">
-                    <p className="text-3xs font-extrabold text-gray-400 uppercase tracking-wider mb-2">
-                      Fechas con reservas registradas:
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {availableDatesWithReservations.map((dateVal) => {
-                        // Formatear para que se vea súper bonito
-                        const parts = dateVal.split('-');
-                        const shortLabel = parts.length === 3 ? `${parts[2]}/${parts[1]}` : dateVal;
-                        const isSelected = selectedDate === dateVal;
-
-                        return (
-                          <button
-                            key={dateVal}
-                            type="button"
-                            onClick={() => setSelectedDate(dateVal)}
-                            className={`px-3 py-1 text-2xs font-extrabold rounded-lg transition-all cursor-pointer ${
-                              isSelected
-                                ? 'bg-emerald-600 text-white shadow-xs'
-                                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                            }`}
-                          >
-                            📅 {shortLabel}
-                          </button>
-                        );
-                      })}
-                    </div>
+                {/* SELECCIÓN RÁPIDA DE FECHA */}
+                <div className="mt-3.5">
+                  <p className="text-3xs font-extrabold text-gray-400 uppercase tracking-widest mb-2">
+                    Acceso de Fecha Directa:
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {getRelativeDates().map(({ label, dateValue, formatted }) => {
+                      const isSelected = selectedDate === dateValue;
+                      return (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => setSelectedDate(dateValue)}
+                          className={`flex items-center gap-1.5 px-3 py-2 text-2xs font-extrabold rounded-xl transition-all duration-200 cursor-pointer border ${
+                            isSelected
+                              ? 'bg-emerald-600 border-emerald-600 text-white shadow-xs'
+                              : 'bg-slate-50 border-gray-150 hover:bg-slate-100 text-slate-700 hover:border-gray-200'
+                          }`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-slate-350'}`}></span>
+                          <span>{label}</span>
+                          <span className={`${isSelected ? 'text-emerald-100 font-normal' : 'text-slate-400 font-normal'}`}>
+                            ({formatted})
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
-                )}
+                </div>
               </div>
 
               {/* SELECTOR DE CANCHAS (PESTAÑAS) */}
