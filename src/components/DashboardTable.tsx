@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { AttendanceRecord } from '../types';
-import { Search, Info, Clock, Mail, Phone, CalendarRange } from 'lucide-react';
+import { Search, Info, Clock, Mail, Phone, CalendarRange, Copy, Check } from 'lucide-react';
 
 interface DashboardTableProps {
   records: AttendanceRecord[];
@@ -37,6 +37,80 @@ function getBlockStartTimeValue(blockStr: string): number {
   }
   return 9999;
 }
+
+interface AttendeeContactInfoProps {
+  telefono?: string;
+  correo?: string;
+}
+
+const AttendeeContactInfo: React.FC<AttendeeContactInfoProps> = ({ telefono, correo }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyEmail = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!correo) return;
+    try {
+      await navigator.clipboard.writeText(correo);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Error al copiar:', err);
+    }
+  };
+
+  const hasPhone = telefono && telefono !== 'Sin Teléfono' && telefono.trim().length > 0;
+  const hasEmail = correo && correo !== 'Sin Correo' && correo !== 'anonymous' && correo.trim().length > 0;
+
+  if (!hasPhone && !hasEmail) {
+    return <span className="italic text-gray-300 text-[11px] font-sans">Sin datos de contacto</span>;
+  }
+
+  return (
+    <div className="flex flex-col gap-2 sm:items-end w-full sm:w-auto min-w-0">
+      {hasPhone && (
+        <a
+          href={`tel:${telefono}`}
+          className="inline-flex items-center gap-1.5 px-3 py-1 text-2xs font-bold bg-pink-50 hover:bg-pink-100 text-pink-700 rounded-lg transition-all border border-pink-100 shrink-0 font-mono"
+          title="Llamar teléfono"
+        >
+          <Phone className="w-3 h-3 text-pink-500 shrink-0" />
+          <span>{telefono}</span>
+        </a>
+      )}
+      
+      {hasEmail && (
+        <div className="flex items-center gap-1.5 w-full sm:w-auto min-w-0">
+          <div className="flex items-center gap-1.5 min-w-0 px-3 py-1 text-2xs font-bold bg-indigo-50 text-indigo-700 rounded-lg border border-indigo-100 grow sm:grow-0">
+            <Mail className="w-3 h-3 text-indigo-400 shrink-0" />
+            <span className="truncate max-w-[170px] sm:max-w-[210px] md:max-w-[280px] font-mono select-all text-slate-650" title={correo}>
+              {correo}
+            </span>
+          </div>
+          
+          <button
+            onClick={handleCopyEmail}
+            type="button"
+            className={`p-1.5 rounded-lg border text-3xs font-extrabold transition-all duration-150 flex items-center justify-center shrink-0 cursor-pointer h-7 ${
+              copied 
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-600' 
+                : 'bg-white hover:bg-slate-50 border-gray-200 text-slate-500 hover:text-slate-850'
+            }`}
+            title={copied ? "Copiado con éxito" : "Copiar correo electrónico"}
+          >
+            {copied ? (
+              <span className="flex items-center gap-1">
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-[10px] font-sans pr-0.5">Copiado</span>
+              </span>
+            ) : (
+              <Copy className="w-3.5 h-3.5" />
+            )}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const DashboardTable: React.FC<DashboardTableProps> = ({
   records,
@@ -252,22 +326,8 @@ export const DashboardTable: React.FC<DashboardTableProps> = ({
                           </div>
 
                           {/* Contacto directo del asistente */}
-                          <div className="shrink-0 flex items-center gap-4 text-3xs font-mono text-gray-400 sm:text-right">
-                            <div className="flex flex-col gap-0.5 sm:items-end">
-                              {booking.telefono && booking.telefono !== 'Sin Teléfono' && (
-                                <span className="flex items-center gap-1 text-slate-600 font-bold">
-                                  📞 {booking.telefono}
-                                </span>
-                              )}
-                              {booking.correo && booking.correo !== 'Sin Correo' && booking.correo !== 'anonymous' && (
-                                <span className="flex items-center gap-1 text-slate-500 hover:text-emerald-700 transition-colors truncate max-w-[150px]" title={booking.correo}>
-                                  ✉️ {booking.correo}
-                                </span>
-                              )}
-                              {(!booking.telefono || booking.telefono === 'Sin Teléfono') && (!booking.correo || booking.correo === 'anonymous') && (
-                                <span className="italic text-gray-300">Sin datos de contacto</span>
-                              )}
-                            </div>
+                          <div className="shrink-0 flex items-center w-full sm:w-auto mt-2 sm:mt-0">
+                            <AttendeeContactInfo telefono={booking.telefono} correo={booking.correo} />
                           </div>
                         </div>
                       ))}
